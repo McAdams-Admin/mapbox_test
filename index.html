@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapbox Map Starter</title>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+        
+        .map-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        
+        .map-overlay h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        button {
+            margin: 2px;
+            padding: 5px 10px;
+            background: #007cbf;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        button:hover {
+            background: #005a8b;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    
+    <div class="map-overlay">
+        <h3>🗺️ Office Locations</h3>
+        <div>
+            <button onclick="flyToLocation([-78.6386, 35.7721])">Raleigh, NC</button>
+            <button onclick="flyToLocation([-80.8414, 35.2271])">Charlotte, NC</button>
+            <button onclick="flyToLocation([-80.2442, 36.0999])">Winston-Salem, NC</button>
+            <button onclick="flyToLocation([-82.5540, 35.5951])">Asheville, NC</button>
+            <button onclick="flyToLocation([-78.8986, 35.9940])">Durham, NC</button>
+            <button onclick="flyToLocation([-82.3940, 34.8526])">Greenville, SC</button>
+            <button onclick="flyToLocation([-97.0403, 33.0462])">Lewisville, TX</button>
+            <button onclick="flyToLocation([-81.3792, 28.5383])">Orlando, FL</button>
+            <button onclick="flyToLocation([-82.4572, 27.9506])">Tampa, FL</button>
+        </div>
+        <div style="margin-top: 10px; font-size: 12px; color: #666;">
+            Zoom: <span id="zoom-level">15</span><br>
+            Center: <span id="coordinates">Loading...</span>
+        </div>
+    </div>
+
+    <script>
+        // Mapbox access token
+        mapboxgl.accessToken = 'pk.eyJ1Ijoic21pdGhtYjAyNDQiLCJhIjoiY21mNGV2YjhkMDRxdjJqcThhN3I3MDU3ZSJ9.jjhwaF_pzxV0Y1fUFC5wGA';
+        
+        // GitHub Pages URL: https://McAdams-Admin.github.io/mapbox_test/
+        
+        // Initialize map
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v12',
+            center: [-78.6440, 35.7890], // 621 Hillsborough St, Raleigh, NC
+            zoom: 15
+        });
+        
+        // Add controls
+        map.addControl(new mapboxgl.NavigationControl());
+        map.addControl(new mapboxgl.FullscreenControl());
+        map.addControl(new mapboxgl.GeolocateControl({
+            positionOptions: { enableHighAccuracy: true },
+            trackUserLocation: true,
+            showUserHeading: true
+        }));
+        
+        // When map loads
+        map.on('load', function() {
+            console.log('Map loaded successfully');
+            
+            // Add home marker
+            new mapboxgl.Marker({ color: '#ff6b6b' })
+                .setLngLat([-78.6440, 35.7890])
+                .setPopup(new mapboxgl.Popup().setHTML('<h4>621 Hillsborough St</h4><p>Raleigh, NC - Home Location</p>'))
+                .addTo(map);
+            
+            // Add office markers
+            const offices = [
+                { coords: [-78.6386, 35.7721], name: 'Raleigh Office', city: 'Raleigh, NC' },
+                { coords: [-80.8414, 35.2271], name: 'Charlotte Office', city: 'Charlotte, NC' },
+                { coords: [-80.2442, 36.0999], name: 'Winston-Salem Office', city: 'Winston-Salem, NC' },
+                { coords: [-82.5540, 35.5951], name: 'Asheville Office', city: 'Asheville, NC' },
+                { coords: [-78.8986, 35.9940], name: 'Durham Office', city: 'Durham, NC' },
+                { coords: [-82.3940, 34.8526], name: 'Greenville Office', city: 'Greenville, SC' },
+                { coords: [-97.0403, 33.0462], name: 'Lewisville Office', city: 'Lewisville, TX' },
+                { coords: [-81.3792, 28.5383], name: 'Orlando Office', city: 'Orlando, FL' },
+                { coords: [-82.4572, 27.9506], name: 'Tampa Office', city: 'Tampa, FL' }
+            ];
+            
+            offices.forEach(office => {
+                const buildingMarker = document.createElement('div');
+                buildingMarker.innerHTML = '🏢';
+                buildingMarker.style.fontSize = '24px';
+                buildingMarker.style.cursor = 'pointer';
+                
+                new mapboxgl.Marker({ element: buildingMarker })
+                    .setLngLat(office.coords)
+                    .setPopup(new mapboxgl.Popup().setHTML(`<h4>${office.name}</h4><p>${office.city}</p>`))
+                    .addTo(map);
+            });
+            
+            // Load GeoJSON data
+            loadGeoJSONData();
+            updateInfo();
+        });
+        
+        // Load and display GeoJSON data
+        function loadGeoJSONData() {
+            map.addSource('geojson-data', {
+                type: 'geojson',
+                data: GEOJSON_DATA
+            });
+            
+            // Add points layer
+            map.addLayer({
+                id: 'geojson-points',
+                type: 'circle',
+                source: 'geojson-data',
+                filter: ['==', '$type', 'Point'],
+                paint: {
+                    'circle-radius': 8,
+                    'circle-color': [
+                        'case',
+                        ['==', ['get', 'status'], 'active'], '#28a745',
+                        ['==', ['get', 'status'], 'planned'], '#ffc107', 
+                        '#6c757d'
+                    ],
+                    'circle-stroke-color': '#fff',
+                    'circle-stroke-width': 2
+                }
+            });
+            
+            // Add lines layer
+            map.addLayer({
+                id: 'geojson-lines',
+                type: 'line',
+                source: 'geojson-data',
+                filter: ['==', '$type', 'LineString'],
+                paint: {
+                    'line-color': '#e74c3c',
+                    'line-width': 3
+                }
+            });
+            
+            // Add polygons
+            map.addLayer({
+                id: 'geojson-polygons-fill',
+                type: 'fill',
+                source: 'geojson-data',
+                filter: ['==', '$type', 'Polygon'],
+                paint: {
+                    'fill-color': '#2ecc71',
+                    'fill-opacity': 0.3
+                }
+            });
+            
+            map.addLayer({
+                id: 'geojson-polygons-stroke',
+                type: 'line',
+                source: 'geojson-data',
+                filter: ['==', '$type', 'Polygon'],
+                paint: {
+                    'line-color': '#27ae60',
+                    'line-width': 2
+                }
+            });
+            
+            // Add click popups
+            ['geojson-points', 'geojson-polygons-fill'].forEach(layerId => {
+                map.on('click', layerId, function(e) {
+                    const properties = e.features[0].properties;
+                    let content = '<div>';
+                    
+                    Object.keys(properties).forEach(key => {
+                        if (properties[key] !== null && properties[key] !== undefined) {
+                            content += `<strong>${key}:</strong> ${properties[key]}<br>`;
+                        }
+                    });
+                    content += '</div>';
+                    
+                    new mapboxgl.Popup()
+                        .setLngLat(e.lngLat)
+                        .setHTML(content)
+                        .addTo(map);
+                });
+                
+                map.on('mouseenter', layerId, () => map.getCanvas().style.cursor = 'pointer');
+                map.on('mouseleave', layerId, () => map.getCanvas().style.cursor = '');
+            });
+        }
+        
+        // Update coordinate display
+        map.on('move', updateInfo);
+        
+        function updateInfo() {
+            const center = map.getCenter();
+            const zoom = map.getZoom();
+            document.getElementById('coordinates').textContent = `${center.lng.toFixed(4)}, ${center.lat.toFixed(4)}`;
+            document.getElementById('zoom-level').textContent = zoom.toFixed(1);
+        }
+        
+        // Fly to location
+        function flyToLocation(coordinates) {
+            map.flyTo({
+                center: coordinates,
+                zoom: 12,
+                duration: 2000
+            });
+        }
+    </script>
+</body>
+</html>
