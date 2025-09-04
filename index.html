@@ -137,11 +137,29 @@
         });
         
         // Load and display GeoJSON data
-        function loadGeoJSONData() {
-            map.addSource('geojson-data', {
-                type: 'geojson',
-                data: GEOJSON_DATA
-            });
+        async function loadGeoJSONData() {
+            try {
+                // Fetch GeoJSON from GitHub
+                const response = await fetch('https://raw.githubusercontent.com/McAdams-Admin/mapbox_test/main/Request_Form_Output_Test.geojson');
+                const geojsonData = await response.json();
+                
+                console.log('GeoJSON loaded:', geojsonData);
+                
+                map.addSource('geojson-data', {
+                    type: 'geojson',
+                    data: geojsonData
+                });
+            } catch (error) {
+                console.error('Error loading GeoJSON:', error);
+                // Fallback to empty data if fetch fails
+                map.addSource('geojson-data', {
+                    type: 'geojson',
+                    data: {
+                        type: "FeatureCollection",
+                        features: []
+                    }
+                });
+            }
             
             // Add points layer
             map.addLayer({
