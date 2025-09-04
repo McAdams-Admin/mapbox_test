@@ -52,6 +52,14 @@
     </style>
 </head>
 <body>
+    <!-- Layer control BEFORE the map div -->
+    <div id="layerControl" style="position: fixed; bottom: 10px; left: 10px; background: red; color: white; padding: 15px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 99999; font-weight: bold;">
+        LAYER BUTTON TEST - VERSION 29
+        <button id="layerToggle" style="background: blue; color: white; padding: 10px; border: none; margin: 5px; cursor: pointer;">
+            CLICK ME
+        </button>
+    </div>
+    
     <div id="map"></div>
     
     <div class="map-overlay">
