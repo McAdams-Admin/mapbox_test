@@ -179,20 +179,31 @@
                 // Fit map to show all GeoJSON features
                 if (geojsonData.features && geojsonData.features.length > 0) {
                     const bounds = new mapboxgl.LngLatBounds();
+                    let validFeatures = 0;
                     
                     geojsonData.features.forEach(feature => {
                         if (feature.geometry.type === 'Point') {
-                            bounds.extend(feature.geometry.coordinates);
+                            const coords = feature.geometry.coordinates;
+                            // Validate coordinates before adding to bounds
+                            if (coords[0] >= -180 && coords[0] <= 180 && coords[1] >= -90 && coords[1] <= 90) {
+                                bounds.extend(coords);
+                                validFeatures++;
+                            } else {
+                                console.warn('Invalid coordinates found:', coords);
+                            }
                         }
                     });
                     
-                    // Fit to bounds with padding
-                    map.fitBounds(bounds, {
-                        padding: 50,
-                        duration: 2000
-                    });
-                    
-                    console.log('Map fitted to GeoJSON bounds');
+                    // Only fit bounds if we have valid features
+                    if (validFeatures > 0 && !bounds.isEmpty()) {
+                        map.fitBounds(bounds, {
+                            padding: 50,
+                            duration: 2000
+                        });
+                        console.log(`Map fitted to ${validFeatures} valid features`);
+                    } else {
+                        console.log('No valid features found for bounds fitting');
+                    }
                 }
                 
             } catch (error) {
