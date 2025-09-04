@@ -296,21 +296,9 @@
             });
         }
         
-        // Layer control functions
-        function toggleLayerDropdown() {
-            const dropdown = document.getElementById('layerDropdown');
-            const button = document.getElementById('layerToggle');
-            
-            if (dropdown.style.display === 'none') {
-                dropdown.style.display = 'block';
-                button.innerHTML = '🗂️ Layers ▲';
-            } else {
-                dropdown.style.display = 'none';
-                button.innerHTML = '🗂️ Layers ▼';
-            }
-        }
-        
+        // Update the toggleLayer function now that we have map references
         function toggleLayer(layerType) {
+            console.log('toggleLayer called with:', layerType);
             switch(layerType) {
                 case 'offices':
                     const officeChecked = document.getElementById('officeLayer').checked;
@@ -352,9 +340,9 @@
             const dropdown = document.getElementById('layerDropdown');
             const button = document.getElementById('layerToggle');
             
-            if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+            if (dropdown && button && !button.contains(event.target) && !dropdown.contains(event.target)) {
                 dropdown.style.display = 'none';
-                button.innerHTML = '🗂️ Layers ▼';
+                button.innerHTML = '🗂️ LAYERS ▼';
             }
         });
     </script>
