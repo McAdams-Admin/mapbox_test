@@ -168,6 +168,25 @@
                 
                 console.log('GeoJSON source added to map');
                 
+                // Fit map to show all GeoJSON features
+                if (geojsonData.features && geojsonData.features.length > 0) {
+                    const bounds = new mapboxgl.LngLatBounds();
+                    
+                    geojsonData.features.forEach(feature => {
+                        if (feature.geometry.type === 'Point') {
+                            bounds.extend(feature.geometry.coordinates);
+                        }
+                    });
+                    
+                    // Fit to bounds with padding
+                    map.fitBounds(bounds, {
+                        padding: 50,
+                        duration: 2000
+                    });
+                    
+                    console.log('Map fitted to GeoJSON bounds');
+                }
+                
             } catch (error) {
                 console.error('Error loading GeoJSON:', error);
                 // Fallback to empty data if fetch fails
@@ -276,6 +295,68 @@
                 duration: 2000
             });
         }
+        
+        // Layer control functions
+        function toggleLayerDropdown() {
+            const dropdown = document.getElementById('layerDropdown');
+            const button = document.getElementById('layerToggle');
+            
+            if (dropdown.style.display === 'none') {
+                dropdown.style.display = 'block';
+                button.innerHTML = '🗂️ Layers ▲';
+            } else {
+                dropdown.style.display = 'none';
+                button.innerHTML = '🗂️ Layers ▼';
+            }
+        }
+        
+        function toggleLayer(layerType) {
+            switch(layerType) {
+                case 'offices':
+                    const officeChecked = document.getElementById('officeLayer').checked;
+                    officeMarkers.forEach(marker => {
+                        if (officeChecked) {
+                            marker.addTo(map);
+                        } else {
+                            marker.remove();
+                        }
+                    });
+                    break;
+                    
+                case 'geojson':
+                    const geojsonChecked = document.getElementById('geojsonLayer').checked;
+                    const layersToToggle = ['geojson-points', 'geojson-lines', 'geojson-polygons-fill', 'geojson-polygons-stroke'];
+                    
+                    layersToToggle.forEach(layerId => {
+                        if (map.getLayer(layerId)) {
+                            map.setLayoutProperty(layerId, 'visibility', geojsonChecked ? 'visible' : 'none');
+                        }
+                    });
+                    break;
+                    
+                case 'home':
+                    const homeChecked = document.getElementById('homeLayer').checked;
+                    if (homeMarker) {
+                        if (homeChecked) {
+                            homeMarker.addTo(map);
+                        } else {
+                            homeMarker.remove();
+                        }
+                    }
+                    break;
+            }
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('layerDropdown');
+            const button = document.getElementById('layerToggle');
+            
+            if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+                button.innerHTML = '🗂️ Layers ▼';
+            }
+        });
     </script>
 </body>
 </html>
