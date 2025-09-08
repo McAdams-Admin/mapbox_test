@@ -349,14 +349,14 @@
             
             console.log('Searching for:', query);
             
-            // Check if input looks like coordinates (lat,lng format)
+            // Check if input looks like coordinates (lng,lat format - Google Maps style)
             const coordPattern = /^-?\d+\.?\d*,-?\d+\.?\d*$/;
             if (coordPattern.test(query)) {
-                const [lat, lng] = query.split(',').map(coord => parseFloat(coord.trim()));
+                const [lng, lat] = query.split(',').map(coord => parseFloat(coord.trim()));
                 
                 // Validate coordinates
                 if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-                    flyToCoordinates([lng, lat], `${lat}, ${lng}`);
+                    flyToCoordinates([lng, lat], `${lng}, ${lat}`);
                 } else {
                     alert('Invalid coordinates. Latitude must be between -90 and 90, longitude between -180 and 180.');
                 }
@@ -407,6 +407,7 @@
     </script>
 </body>
 </html>
+
 
 
 
