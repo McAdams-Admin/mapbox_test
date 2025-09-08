@@ -226,6 +226,54 @@
             });
         }
         
+        // Layer dropdown toggle function
+        function toggleLayerDropdown() {
+            const dropdown = document.getElementById('layerDropdown');
+            const button = document.getElementById('layerToggle');
+            
+            if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+                dropdown.style.display = 'block';
+                button.innerHTML = 'Layers ▼';
+            } else {
+                dropdown.style.display = 'none';
+                button.innerHTML = 'Layers ▲';
+            }
+        }
+        
+        // Layer toggle functions
+        function toggleLayer(layerType) {
+            switch(layerType) {
+                case 'offices':
+                    const officeChecked = document.getElementById('officeLayer').checked;
+                    officeMarkers.forEach(marker => {
+                        if (officeChecked) {
+                            marker.addTo(map);
+                        } else {
+                            marker.remove();
+                        }
+                    });
+                    break;
+                    
+                case 'geojson':
+                    const geojsonChecked = document.getElementById('geojsonLayer').checked;
+                    if (map.getLayer('geojson-points')) {
+                        map.setLayoutProperty('geojson-points', 'visibility', geojsonChecked ? 'visible' : 'none');
+                    }
+                    break;
+                    
+                case 'home':
+                    const homeChecked = document.getElementById('homeLayer').checked;
+                    if (homeMarker) {
+                        if (homeChecked) {
+                            homeMarker.addTo(map);
+                        } else {
+                            homeMarker.remove();
+                        }
+                    }
+                    break;
+            }
+        }
+        
         // Layer dropdown functions
         function toggleLayerDropdown() {
             const dropdown = document.getElementById('layerDropdown');
@@ -286,4 +334,5 @@
     </script>
 </body>
 </html>
+
 
