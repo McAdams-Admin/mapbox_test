@@ -76,26 +76,32 @@
         </div>
     </div>
     
-    <!-- STATIC LAYER CONTROL PANEL (bottom left) -->
-    <div style="position: absolute; bottom: 20px; left: 20px; z-index: 10000; background: white; border: 1px solid #ccc; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); padding: 15px; min-width: 180px;">
-        <div style="font-weight: bold; margin-bottom: 10px; font-size: 14px; color: #333;">
-            Map Layers
+    <!-- COLLAPSIBLE LAYER CONTROL PANEL (bottom left) -->
+    <div style="position: absolute; bottom: 20px; left: 20px; z-index: 10000; background: white; border: 1px solid #ccc; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+        
+        <!-- Panel Header (always visible) -->
+        <div onclick="toggleLayerPanel()" style="padding: 10px 15px; cursor: pointer; font-weight: bold; font-size: 14px; color: #333; border-bottom: 1px solid #eee; user-select: none;">
+            <span id="panelTitle">Map Layers</span>
+            <span id="panelArrow" style="float: right;">▲</span>
         </div>
         
-        <label style="display: block; margin: 8px 0; cursor: pointer; font-size: 13px;">
-            <input type="checkbox" id="officeLayer" checked onchange="toggleLayer('offices')" style="margin-right: 8px;">
-            Office Buildings
-        </label>
-        
-        <label style="display: block; margin: 8px 0; cursor: pointer; font-size: 13px;">
-            <input type="checkbox" id="geojsonLayer" checked onchange="toggleLayer('geojson')" style="margin-right: 8px;">
-            GeoJSON Data
-        </label>
-        
-        <label style="display: block; margin: 8px 0; cursor: pointer; font-size: 13px;">
-            <input type="checkbox" id="homeLayer" checked onchange="toggleLayer('home')" style="margin-right: 8px;">
-            Home Location
-        </label>
+        <!-- Panel Content (collapsible) -->
+        <div id="layerPanelContent" style="padding: 15px; min-width: 160px;">
+            <label style="display: block; margin: 8px 0; cursor: pointer; font-size: 13px;">
+                <input type="checkbox" id="officeLayer" checked onchange="toggleLayer('offices')" style="margin-right: 8px;">
+                Office Buildings
+            </label>
+            
+            <label style="display: block; margin: 8px 0; cursor: pointer; font-size: 13px;">
+                <input type="checkbox" id="geojsonLayer" checked onchange="toggleLayer('geojson')" style="margin-right: 8px;">
+                GeoJSON Data
+            </label>
+            
+            <label style="display: block; margin: 8px 0; cursor: pointer; font-size: 13px;">
+                <input type="checkbox" id="homeLayer" checked onchange="toggleLayer('home')" style="margin-right: 8px;">
+                Home Location
+            </label>
+        </div>
     </div>
 
     <script>
@@ -272,6 +278,20 @@
                         }
                     }
                     break;
+            }
+        }
+        
+        // Panel collapse/expand function
+        function toggleLayerPanel() {
+            const content = document.getElementById('layerPanelContent');
+            const arrow = document.getElementById('panelArrow');
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                arrow.textContent = '▲';
+            } else {
+                content.style.display = 'none';
+                arrow.textContent = '▼';
             }
         }
     </script>
