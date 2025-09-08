@@ -76,17 +76,17 @@
         </div>
     </div>
     
-    <!-- COLLAPSIBLE LAYER CONTROL PANEL (bottom left) -->
+    <!-- COLLAPSIBLE LAYER CONTROL PANEL (bottom left) - STARTS COLLAPSED -->
     <div style="position: absolute; bottom: 20px; left: 20px; z-index: 10000; background: white; border: 1px solid #ccc; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
         
         <!-- Panel Header (always visible) -->
         <div onclick="toggleLayerPanel()" style="padding: 10px 15px; cursor: pointer; font-weight: bold; font-size: 14px; color: #333; border-bottom: 1px solid #eee; user-select: none;">
             <span id="panelTitle">Map Layers</span>
-            <span id="panelArrow" style="float: right;">▲</span>
+            <span id="panelArrow" style="float: right;">▼</span>
         </div>
         
-        <!-- Panel Content (collapsible) -->
-        <div id="layerPanelContent" style="padding: 15px; min-width: 160px;">
+        <!-- Panel Content (starts hidden) -->
+        <div id="layerPanelContent" style="display: none; padding: 15px; min-width: 160px;">
             <label style="display: block; margin: 8px 0; cursor: pointer; font-size: 13px;">
                 <input type="checkbox" id="officeLayer" checked onchange="toggleLayer('offices')" style="margin-right: 8px;">
                 Office Buildings
