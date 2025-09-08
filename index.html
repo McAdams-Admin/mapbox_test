@@ -95,7 +95,7 @@
             <input 
                 type="text" 
                 id="searchInput" 
-                placeholder="Enter address or lat,lng (e.g. 35.7796,-78.6382)"
+                placeholder="Enter address or lng,lat (e.g. -78.6382,35.7796)"
                 style="margin-bottom: 8px;"
                 onkeypress="handleSearchKeyPress(event)"
             >
@@ -107,7 +107,7 @@
         <div style="font-size: 11px; color: #666; line-height: 1.3;">
             Examples:<br>
             • "1600 Pennsylvania Ave, Washington DC"<br>
-            • "35.7796,-78.6382" (lat,lng format)
+            • "-78.6382,35.7796" (lng,lat from Google Maps)
         </div>
     </div>
     
@@ -375,7 +375,7 @@
                     
                     flyToCoordinates(coordinates, placeName);
                 } else {
-                    alert('Location not found. Please try a different address or use lat,lng coordinates.');
+                    alert('Location not found. Please try a different address or use lng,lat coordinates.');
                 }
             } catch (error) {
                 console.error('Geocoding error:', error);
@@ -407,6 +407,7 @@
     </script>
 </body>
 </html>
+
 
 
 
